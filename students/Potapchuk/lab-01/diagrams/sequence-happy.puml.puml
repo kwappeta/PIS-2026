@@ -1,0 +1,46 @@
+@startuml "Happy Path - Book Review"
+header Лабораторная работа №1 - Вариант 19
+title Сценарий: Завершение чтения и добавление отзыва (Happy Path)
+
+actor "Читатель" as User
+participant "Web UI" as UI
+participant "Book Service" as API
+database "Main Database" as DB
+participant "Event Bus" as Bus
+
+User -> UI: Нажимает "Завершить чтение"
+activate UI
+UI -> User: Отображает форму отзыва
+User -> UI: Вводит рейтинг и текст отзыва
+UI -> API: POST /api/v1/reviews (JSON)
+activate API
+
+note over API, DB: Начало транзакции
+
+API -> DB: INSERT review_data
+activate DB
+DB --> API: review_id
+deactivate DB
+
+API -> DB: UPDATE book_status = 'READ'
+activate DB
+DB --> API: OK
+deactivate DB
+
+API -> DB: RECALCULATE average_rating
+activate DB
+DB --> API: New rating value
+deactivate DB
+
+note over API, DB: Фиксация транзакции (Commit)
+
+API -->> Bus: Publish Event "BookFinished" (Async)
+note right: Асинхронное уведомление других сервисов
+
+API --> UI: 201 Created (Success)
+deactivate API
+
+UI --> User: Уведомление: "Поздравляем с новой книгой!"
+deactivate UI
+
+@enduml

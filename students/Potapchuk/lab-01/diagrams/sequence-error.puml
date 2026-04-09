@@ -1,0 +1,21 @@
+@startuml "Database Timeout"
+header Лабораторная работа №1 - Вариант 19
+actor "Читатель" as User
+participant "Web UI" as UI
+participant "Book Service" as API
+database "Main Database" as DB
+
+User -> UI: Нажимает "Сохранить"
+activate UI
+UI -> API: POST /api/v1/reviews
+activate API
+API -> DB: START TRANSACTION
+activate DB
+DB --X API: Connection Timeout
+deactivate DB
+note over API: Обнаружение ошибки (Rollback)
+API --> UI: 500 Internal Server Error
+deactivate API
+UI --> User: Сообщение: "Ошибка сохранения"
+deactivate UI
+@enduml
