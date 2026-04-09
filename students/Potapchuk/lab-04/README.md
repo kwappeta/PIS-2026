@@ -9,8 +9,8 @@
 <br><br><br><br><br><br>
 <p align="right"><strong>Выполнил:</strong></p>
 <p align="right">Студент 3 курса</p>
-<p align="right">Группа ПО-12</p>
-<p align="right">Фолитарик Я.Л.</p>
+<p align="right">Группа ПО-13</p>
+<p align="right">Потапчук А.С.</p>
 <p align="right"><strong>Проверил:</strong></p>
 <p align="right">Несюк А.Н.</p>
 <br><br><br><br><br>
