@@ -1,0 +1,16 @@
+services:
+  api-gateway:
+    build:
+      context: ./ApiGateway
+  
+  group-service:
+    build:
+      context: ./services/GroupService
+
+  request-service:
+    build:
+      context: ./services/RequestService
+
+  notification-service:
+    build:
+      context: ./services/NotificationService

@@ -1,15 +1,19 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using GrpcServer.Services;        // важно!
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Добавляем gRPC сервисы
 builder.Services.AddGrpc();
 
 var app = builder.Build();
 
+// Подключаем наш gRPC сервис
 app.MapGrpcService<RequestServiceImpl>();
 
-app.MapGet("/", () => "gRPC Server is running. Use a gRPC client to call it.");
+// Простая страница при открытии в браузере
+app.MapGet("/", () => "✅ gRPC Server is running!\nUse a gRPC client to call services.");
 
 app.Run();

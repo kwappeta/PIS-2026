@@ -1,28 +1,45 @@
-using Grpc.Net.Client;
+﻿using Grpc.Net.Client;
 using RequestGrpc;
+using System;
+using System.Threading.Tasks;
+using Grpc.Core;
+using System.Collections.Generic;
 
-var channel = GrpcChannel.ForAddress("http://localhost:5001");
-var client = new RequestService.RequestServiceClient(channel);
-
-Console.WriteLine("=== gRPC Client ===");
-
-// Unary call - Create
-var createReply = await client.CreateRequestAsync(new CreateRequestRequest
+namespace GrpcClient
 {
-    Title = "Тестовая заявка через gRPC",
-    RequesterId = "user-001",
-    ZoneId = "zone-10",
-    EmergencyLevel = 5
-});
-Console.WriteLine($"Создан запрос: {createReply.RequestId} | Статус: {createReply.Status}");
+    class Program
+    {
+        static async Task Main(string[] args)
+        {
+            Console.WriteLine("=== gRPC Client Started ===\n");
 
-// Server Streaming
-Console.WriteLine("\n=== Streaming активных заявок ===");
-using var streamingCall = client.StreamActiveRequests(new StreamRequest { ZoneId = "zone-10" });
+            using var channel = GrpcChannel.ForAddress("http://localhost:5150");
+            var client = new RequestService.RequestServiceClient(channel);
 
-await foreach (var response in streamingCall.ResponseStream.ReadAllAsync())
-{
-    Console.WriteLine($"→ Получена заявка: {response.Title} ({response.Status})");
+            // 1. Создание заявки
+            Console.WriteLine("Отправляем запрос на создание заявки...");
+            var createReply = await client.CreateRequestAsync(new CreateRequestRequest
+            {
+                Title = "Тестовая заявка через gRPC",
+                Description = "Создано из клиента",
+                RequesterId = "user-001",
+                ZoneId = "zone-10",
+                EmergencyLevel = 5
+            });
+
+            Console.WriteLine($"✅ Заявка создана! ID: {createReply.RequestId}, Статус: {createReply.Status}\n");
+
+            // 2. Server-side Streaming
+            Console.WriteLine("Запускаем стриминг активных заявок...");
+            using var streamingCall = client.StreamActiveRequests(new StreamRequest { ZoneId = "zone-10" });
+
+            await foreach (var response in streamingCall.ResponseStream.ReadAllAsync())
+            {
+                Console.WriteLine($"→ Получена заявка: {response.Title} | Статус: {response.Status} | Уровень: {response.EmergencyLevel}");
+            }
+
+            Console.WriteLine("\n✅ Streaming завершён.");
+            Console.ReadKey();
+        }
+    }
 }
-
-Console.WriteLine("Streaming завершён.");

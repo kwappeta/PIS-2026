@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.76.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="proto\request_service.proto" GrpcServices="Server" />
+  </ItemGroup>
+
+</Project>
